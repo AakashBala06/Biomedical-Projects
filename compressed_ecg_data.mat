@@ -1,0 +1,55 @@
+% ECG Signal Compression using Discrete Walsh-Hadamard Transform (WHT)
+
+clc; clear; close all
+
+% --- Step 1: Simulate ECG Signal ---
+ecg_single = ecg(512);                      % Single ECG waveform
+x = repmat(ecg_single, 1, 8);               % Repeat to get 4096 samples
+x = x + 0.1 * randn(1, length(x));          % Add Gaussian noise
+N = length(x);                              % Signal length
+
+% --- Step 2: Apply Fast Walsh-Hadamard Transform ---
+y = fwht(x);                                % Sequency-domain representation
+
+% --- Step 3: Visualize Original ECG and WHT Coefficients ---
+figure
+subplot(2,1,1)
+plot(x)
+xlabel('Sample Index')
+ylabel('Amplitude')
+title('Original Noisy ECG Signal')
+
+subplot(2,1,2)
+plot(abs(y))
+xlabel('Sequency Index')
+ylabel('Magnitude')
+title('WHT Coefficients')
+
+% --- Step 4: Compress Signal by Truncating High-Sequency Coefficients ---
+k = 1024;                   % Number of coefficients to keep
+y_trunc = y;
+y_trunc(k+1:end) = 0;       % Zero out higher sequency components
+
+% --- Step 5: Reconstruct ECG using Inverse WHT ---
+x_recon = ifwht(y_trunc);   % Reconstructed ECG
+
+% --- Step 6: Visualize Reconstructed Signal ---
+figure
+plot(x, 'b')
+hold on
+plot(x_recon, 'r')
+xlabel('Sample Index')
+ylabel('Amplitude')
+title('Original vs Reconstructed ECG')
+legend('Original ECG', 'Reconstructed ECG')
+
+% --- Step 7: Compute Metrics ---
+rmse = sqrt(mean((x - x_recon).^2));
+compression_ratio = N / k;
+
+fprintf('RMSE between original and reconstructed ECG: %.4f\n', rmse);
+fprintf('Compression Ratio: %.2f:1\n', compression_ratio);
+
+% --- Optional: Save Compressed Data ---
+compressed_data = [N, y_trunc(1:k)];
+save('compressed_ecg_data.mat', 'compressed_data');
