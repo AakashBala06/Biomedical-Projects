@@ -13,13 +13,13 @@ Efficient ECG signal storage and transmission is critical for medical devices an
 ##  Results
 
 ### Original Noisy ECG and WHT Coefficients
-![WHT Coefficients](ecg_original_and_wht.png)
+
 
 - Most signal energy is concentrated in low-sequency components.
 - This means the signal can be compressed while still retaining its shape and diagnostic features.
 
 ### Original vs Reconstructed ECG
-![ECG Comparison](ecg_original_vs_reconstructed.png)
+
 
 - The red signal (reconstructed) closely follows the blue signal (original).
 - Despite compression, key patterns like R-peaks are preserved.
